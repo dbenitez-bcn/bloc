@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,12 +8,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        Provider<Bloc>(
+          builder: (_) => Bloc(),
+          dispose: (_, bloc) => bloc.dispose(),
+        )
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: MyHomePage(title: 'Flutter Demo Home Page'),
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -50,7 +59,7 @@ class PageViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final InheretBloc bloc = InheretBloc.of(context);
+    final Bloc bloc = Provider.of<Bloc>(context);
 
     return SizedBox(
       width: MediaQuery
@@ -62,7 +71,7 @@ class PageViewer extends StatelessWidget {
           .size
           .height * 0.7,
       child: PageView(
-        onPageChanged: bloc.bloc.changedSink.add,
+        onPageChanged: bloc.changedSink.add,
         children: <Widget>[
           Container(
             width: MediaQuery
@@ -116,9 +125,9 @@ class PageIndicator extends StatefulWidget {
 class _PageIndicatorState extends State<PageIndicator> {
   @override
   Widget build(BuildContext context) {
-    final InheretBloc bloc = InheretBloc.of(context);
+    final Bloc bloc = Provider.of<Bloc>(context);
     return StreamBuilder<int>(
-      stream: bloc.bloc.indexStream,
+      stream: bloc.indexStream,
       initialData: 0,
       builder: (context, snapshot) {
         return Text("Index ${snapshot.data}");
